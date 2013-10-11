@@ -1,0 +1,6 @@
+#ifndef LOAD_SHADER
+#define LOAD_SHADER
+
+std::string LoadShaders (char* Shader);
+
+#endif
