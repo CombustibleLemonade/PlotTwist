@@ -18,9 +18,9 @@ vec3 fractal (vec2 location, int iterations){
 		escape = multiply(escape, escape)/2+vec2((gl_FragCoord.x-960)/300, (gl_FragCoord.y-540)/300);
 		distance = sqrt(escape[0]*escape[0]+escape[1]*escape[1]);
 		if (distance>1000) {
-			return vec3(	(cos(log2(distance/1000)*2/3)/2+0.5), 
-					(cos(log2(distance/1000)*2/3)/2+0.5), 
-					(cos(log2(distance/1000)*2/3)/2+0.5));
+			float DistanceValue = sin(log2(distance/1000)/2);
+			float vecComponent = 0.0;
+			return vec3(DistanceValue, DistanceValue, DistanceValue);
 		}
 		i++;
 	}
