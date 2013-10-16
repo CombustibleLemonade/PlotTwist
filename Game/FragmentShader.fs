@@ -37,6 +37,6 @@ vec3 fractal (vec2 location, int iterations){
 
 
 void main(void) {
-	OutputColor = fractal (vec2((gl_FragCoord.x-960)/300, (gl_FragCoord.y-540)/300), 150);
+	OutputColor = fractal (vec2((gl_FragCoord.x-960)/300, (gl_FragCoord.y-540)/300), 100);
 	gl_FragColor = vec4(OutputColor ,0.0);
 }
