@@ -33,6 +33,12 @@ find_package(GLEW REQUIRED)
 include_directories(${GLEW_INCLUDE_PATH})
 
 #########################################################
+# Find OpenAL
+#########################################################
+find_package(OpenAL REQUIRED)
+include_directories(${OPENAL_INCLUDE_DIR})
+
+#########################################################
 # Include Files
 #########################################################
 include_directories(${CMAKE_SOURCE_DIR}/Common)
@@ -46,10 +52,11 @@ add_executable(plotTwist
 ########################################################
 # Linking & stuff
 #########################################################
-message(ERROR ${GLEW_LIBRARY})
 
   # create the program "test"
   target_link_libraries(plotTwist
     ${OPENGL_LIBRARIES}
     ${GLUT_LIBRARY}
-    ${GLEW_LIBRARY})
+    ${GLEW_LIBRARY}
+    ${OPENAL_LIBRARY}
+)

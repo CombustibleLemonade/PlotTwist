@@ -1,14 +1,21 @@
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string>
 
 #ifdef __APPLE__
 #include <GLEW/glew.h>
 #include <GLUT/glut.h>
+#include <OpenAL/alut.h>
 #else
 #include <GL/glew.h>
 #include <GL/freeglut.h>
+#include <AL/al.h>
+#include <AL/alc.h>
 #endif
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "File2String.h"
 #include "CreateShaderProgram.h"
@@ -17,6 +24,19 @@ using namespace std;
 
 GLuint program;
 GLint attribute_coord2d, XUL, YUL;
+
+int fullScreen = 0;
+
+//information for buffering mouse cursor location
+int oldX = 0;
+int oldY = 0;
+int Xvalue = 960;
+int Yvalue = 540;
+float xToShader = 0.0;
+float yToShader = 0.0;
+
+//information for OpenAL
+ALCdevice *device;
 
 int init_resources()
 {
@@ -55,17 +75,24 @@ int init_resources()
         fprintf(stderr, "Could not bind attribute %s\n", attribute_name);
         return 0;
     }
+
+    device = alcOpenDevice(NULL);
     return 1;
 }
 
-void mouse (int button, int state, int x, int y)
+void keyboard (unsigned char button, int x, int y)
 {
-    if (button == 0) {
-        glutFullScreen();
+    if (button == 27) {
+        if (!fullScreen) {
+            glutFullScreen();
+            fullScreen = 1;
+        }
+        else {
+            glutReshapeWindow(1600,900);
+            fullScreen = 0;
+        }
     }
-    if (button) {
-        glutReshapeWindow(1600,900);
-    }
+    cout << int(button) << endl;
 }
 
 void motion (int x, int y)
@@ -73,18 +100,28 @@ void motion (int x, int y)
     XUL = glGetUniformLocation(program, "X");
     YUL = glGetUniformLocation(program, "Y");
 
-    float xToShader = x;
-    xToShader -= 960;
-    xToShader /= 200;
-    float yToShader = y;
-    yToShader -= 540;
-    yToShader /= 200;
+    Xvalue += x - oldX;
+    Yvalue += y - oldY;
 
+    xToShader = Xvalue;
+    xToShader -= 960;
+    xToShader /= 1000;
+
+    yToShader = Yvalue;
+    yToShader -= 540;
+    yToShader /= 1000;
 
     glUniform1f(XUL, xToShader);
-    glutPostRedisplay();
     glUniform1f(YUL, yToShader);
     glutPostRedisplay();
+
+    oldX = x;
+    oldY = y;
+}
+
+void mouse (int button, int state, int x, int y) {
+    oldX = x;
+    oldY = y;
 }
 
 void onDisplay()
@@ -121,13 +158,22 @@ void free_resources()
     glDeleteProgram(program);
 }
 
+void onIdle() {
+    float move = sinf(glutGet(GLUT_ELAPSED_TIME) / 1000.0 * (2*3.14) / 5); // -1<->+1 every 5 seconds
+    float angle = glutGet(GLUT_ELAPSED_TIME) / 1000.0 * 45;  // 45° per second
+    glm::vec3 axis_z(0, 0, 1);
+    glm::mat4 m_transform = glm::translate(glm::mat4(1.0f), glm::vec3(move, 0.0, 0.0)) * glm::rotate(glm::mat4(1.0f), angle, axis_z);
+
+    glm::vec4 testVector = m_transform[0];
+    cout << "x:" << testVector[0]<< " y:"<< testVector[1]<< " z:"<< testVector[2]<< endl;
+}
+
 int main(int argc, char* argv[])
 {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE|GLUT_DEPTH);
     glutInitWindowSize(1600, 900);
     glutCreateWindow("PlotTwist");
-
 
     GLenum glew_status = glewInit();
 
@@ -136,10 +182,12 @@ int main(int argc, char* argv[])
         return 1;
     }
     if (init_resources()) {
-        glutPassiveMotionFunc(motion);
         glutMotionFunc(motion);
+        glutKeyboardFunc(keyboard);
         glutMouseFunc(mouse);
         glutDisplayFunc(onDisplay);
+        glutIdleFunc(onIdle);
+
         glutMainLoop();
         return 1;
     }
