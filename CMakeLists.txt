@@ -33,12 +33,6 @@ find_package(GLEW REQUIRED)
 include_directories(${GLEW_INCLUDE_PATH})
 
 #########################################################
-# Find OpenAL
-#########################################################
-find_package(OpenAL REQUIRED)
-include_directories(${OPENAL_INCLUDE_DIR})
-
-#########################################################
 # Include Files
 #########################################################
 include_directories(${CMAKE_SOURCE_DIR}/Common)

@@ -6,12 +6,9 @@
 #ifdef __APPLE__
 #include <GLEW/glew.h>
 #include <GLUT/glut.h>
-#include <OpenAL/alut.h>
 #else
 #include <GL/glew.h>
 #include <GL/freeglut.h>
-#include <AL/al.h>
-#include <AL/alc.h>
 #endif
 
 #include <glm/glm.hpp>
@@ -32,11 +29,8 @@ int oldX = 0;
 int oldY = 0;
 int Xvalue = 960;
 int Yvalue = 540;
-float xToShader = 0.0;
+float xToShader = -960.0/1000;
 float yToShader = 0.0;
-
-//information for OpenAL
-ALCdevice *device;
 
 int init_resources()
 {
@@ -76,7 +70,6 @@ int init_resources()
         return 0;
     }
 
-    device = alcOpenDevice(NULL);
     return 1;
 }
 

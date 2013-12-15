@@ -1,7 +1,7 @@
 #version 330 core
 
-uniform float X = 0.5;
-uniform float Y = 0.5;
+uniform float X = 0.0;
+uniform float Y = 0.0;
 
 vec3 OutputColor;
 
